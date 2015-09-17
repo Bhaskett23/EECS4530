@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 #include "vgl.h"
@@ -71,7 +72,7 @@ void timer(int value) {
 * argument for the shaders and pass the result into here to make
 * it easy to change shaders.
 */
-void init() {
+void init(string fileLocation) {
 
 	/*
 	* our data is static so that it doesn't disappear with the stack.  Also, the
@@ -86,7 +87,7 @@ void init() {
 	* call for glDrawArray.  In this case we are reading it in using
 	* the ReadOBJ routine.
 	*/
-	fileTriangles = readOBJFile("icodos.obj", nbrTriangles);
+	fileTriangles = readOBJFile(fileLocation, nbrTriangles);
 	/*
 	* I'm using wide lines so that they are easier to see on the screen.
 	*/
@@ -162,6 +163,10 @@ int main(int argCount, char *argValues[]) {
 	// Check for a flag to determine if we are using glDrawElements or 
 	// glDrawArray.  I'm looking for either --elements or --array.
 	// The default is the elements.
+	string input;
+	cout << "Please input file location";
+	getline(cin, input);
+
 	elements = true;
 	for (int argNbr = 1; argNbr < argCount; argNbr++) {
 		if (argValues[argNbr] == "--elements") {
@@ -180,7 +185,7 @@ int main(int argCount, char *argValues[]) {
 	glutInitContextVersion(3, 1);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 	glewInit();
-	init();
+	init(input);
 	glutDisplayFunc(display);
 	glutTimerFunc(1000 / 30, timer, 1);
 	glutMainLoop();
