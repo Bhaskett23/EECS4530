@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <GL/glew.h>
 #include <GL/freeglut.h>
@@ -56,9 +57,11 @@ int    nbrTriangles;
 * tells Glut to redraw the screen, and sets a timer for 1/30 of a
 * second later.
 */
-void timer(int value) {
+void timer(int value) 
+{
 	rotationAngle += 1.0f;
-	if (rotationAngle > 360) {
+	if (rotationAngle > 360) 
+	{
 		rotationAngle = rotationAngle - 360;
 	}
 	glutPostRedisplay();
@@ -164,19 +167,24 @@ int main(int argCount, char *argValues[]) {
 	// glDrawArray.  I'm looking for either --elements or --array.
 	// The default is the elements.
 	string input;
-	cout << "Please input file location";
+	cout << "Please input file location: ";
 	getline(cin, input);
-
-	elements = true;
-	for (int argNbr = 1; argNbr < argCount; argNbr++) {
-		if (argValues[argNbr] == "--elements") {
-			cout << "Drawing using glDrawElements" << endl;
-			elements = true;
-		}
-		else if (argValues[argNbr] == "--array") {
-			elements = false;
-		}
+	std::ifstream f(input);
+	if (!f.good())
+	{
+		cout << "File does not exist";
+		return 0;
 	}
+	//elements = true;
+	//for (int argNbr = 1; argNbr < argCount; argNbr++) {
+	//	if (argValues[argNbr] == "--elements") {
+	//		cout << "Drawing using glDrawElements" << endl;
+	//		elements = true;
+	//	}
+	//	else if (argValues[argNbr] == "--array") {
+	//		elements = false;
+	//	}
+	//}
 
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH);
 	glutInitWindowSize(500, 500);
