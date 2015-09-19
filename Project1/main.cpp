@@ -59,13 +59,13 @@ int    nbrTriangles;
 */
 void timer(int value) 
 {
-	rotationAngle += 1.0f;
+	rotationAngle += value;
 	if (rotationAngle > 360) 
 	{
 		rotationAngle = rotationAngle - 360;
 	}
 	glutPostRedisplay();
-	glutTimerFunc(1000 / 30, timer, 1);
+	glutTimerFunc(100 / 3, timer, value);
 }
 
 /*
@@ -75,7 +75,7 @@ void timer(int value)
 * argument for the shaders and pass the result into here to make
 * it easy to change shaders.
 */
-void init(string fileLocation) {
+void init(string fileLocation, string vertexShader, string fragmentShader) {
 
 	/*
 	* our data is static so that it doesn't disappear with the stack.  Also, the
@@ -115,9 +115,14 @@ void init(string fileLocation) {
 	/*
 	*  Use the Books code to load in the shaders.
 	*/
-	ShaderInfo shaders[] = {
-		{ GL_VERTEX_SHADER, "pass.vert" },
-		{ GL_FRAGMENT_SHADER, "pass.frag" },
+
+	const char *vertex = vertexShader.c_str();
+	const char *fragment = fragmentShader.c_str();
+
+	ShaderInfo shaders[] = 
+	{
+		{ GL_VERTEX_SHADER, vertex },
+		{ GL_FRAGMENT_SHADER, fragment },
 		{ GL_NONE, NULL }
 	};
 	GLuint program = LoadShaders(shaders);
@@ -161,41 +166,52 @@ void display() {
 * sets up the window.
 */
 int main(int argCount, char *argValues[]) {
+	
 	glutInit(&argCount, argValues);
-
-	// Check for a flag to determine if we are using glDrawElements or 
-	// glDrawArray.  I'm looking for either --elements or --array.
-	// The default is the elements.
+	
 	string input;
 	cout << "Please input file location: ";
 	getline(cin, input);
+
 	std::ifstream f(input);
 	if (!f.good())
 	{
 		cout << "File does not exist";
 		return 0;
 	}
-	//elements = true;
-	//for (int argNbr = 1; argNbr < argCount; argNbr++) {
-	//	if (argValues[argNbr] == "--elements") {
-	//		cout << "Drawing using glDrawElements" << endl;
-	//		elements = true;
-	//	}
-	//	else if (argValues[argNbr] == "--array") {
-	//		elements = false;
-	//	}
-	//}
+	char rotation;
+	cout << "Rotate the object? (y/n) ";
+	cin >> rotation;
 
+	string vertectShader;
+	string fragmentShader;
+
+	double rotationSpeed = 1;
+
+	if (rotation == 'y')
+	{
+		vertectShader = "pass.vert";
+		fragmentShader = "pass.frag";
+
+		cout << "how fast should the object rotate? ";
+		cin >> rotationSpeed;
+	}
+	else if (rotation == 'n')
+	{
+		vertectShader = "passWithRotation.vert";
+		fragmentShader = "passWithRotation.frag";
+	}
+	
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH);
 	glutInitWindowSize(500, 500);
 	glutCreateWindow("Icosahedron Sample");
-
+	
 	glutInitContextVersion(3, 1);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 	glewInit();
-	init(input);
+	init(input, vertectShader, fragmentShader);
 	glutDisplayFunc(display);
-	glutTimerFunc(1000 / 30, timer, 1);
+	glutTimerFunc(1000 / 30, timer, rotationSpeed);
 	glutMainLoop();
 	return 0;
 }
