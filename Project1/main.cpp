@@ -8,7 +8,6 @@
 #include <algorithm>
 using namespace std;
 
-
 /*
 * This program is to read in elevation data from a NASA 1 degree file.
 *
@@ -26,29 +25,65 @@ const int NBR_TRIANGLES_PER_QUAD = 2;
 const int NBR_FLOATS_PER_POINT = 3;
 const int NBR_POINTS_PER_TRIANGLE = 3;
 
-static float *fileData;
-
-void readLineFromFile(istream& inFile, float *line){
-	unsigned char inputline[NBR_LINES * 2];
-
-	inFile.read((char *)inputline, NBR_LINES * 2);
-	for (int i = 0, j = 0; j < NBR_LINES; i += 2, j++) {
-		line[j] = float((unsigned int)((inputline[i] << 8) | inputline[i + 1]));
-	}
-	return;
-
-}
+GLfloat triangles[] = 
+{ 
+	-10.0f, 0.0f, 10.0f, 0.0f, 0.0f, 10.0f, -10.0f, 0.0f, 0.0f,
+	-10.0f, 0.0f, 0.0f, 0.0f, 0.0f, 10.0f, 0.0f, 0.0f, 0.0f,
+	0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 10.0f, 10.0f, 0.0f, 0.0f,
+	10.0f, 0.0f, 0.0f, 0.0f, 0.0f, 10.0f, 10.0f, 0.0f, 10.0f,
+	-10.0f, 0.0f, -10.0f, 0.0f, 0.0f, -10.0f, -10.0f, 0.0f, 0.0f,
+	-10.0f, 0.0f, 0.0f, 0.0f, 0.0f, -10.0f, 0.0f, 0.0f, 0.0f,
+	0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -10.0f, 10.0f, 0.0f, 0.0f,
+	10.0f, 0.0f, 0.0f, 0.0f, 0.0f, -10.0f, 10.0f, 0.0f, -10.0f 
+};
+static float cubeVertices[] = 
+{
+	0.0, 0.0, 0.0, 1.0,
+	1.0, 0.0, 0.0, 1.0,
+	1.0, 1.0, 0.0, 1.0,
+	0.0, 1.0, 0.0, 1.0,
+	0.0, 0.0, 1.0, 1.0,
+	1.0, 0.0, 1.0, 1.0,
+	1.0, 1.0, 1.0, 1.0,
+	0.0, 1.0, 1.0, 1.0
+};
+static float cubeColors[] = 
+{
+	0.0, 0.0, 0.0, 1.0, // Black
+	1.0, 0.0, 0.0, 1.0, // Red
+	1.0, 1.0, 0.0, 1.0, // Yellow
+	0.0, 1.0, 0.0, 1.0, // Green
+	0.0, 0.0, 1.0, 1.0, // Blue
+	1.0, 0.0, 1.0, 1.0, // Magenta
+	1.0, 1.0, 1.0, 1.0, // White
+	0.0, 1.0, 1.0, 1.0 // Cyan
+};
+static GLuint cubeTriangles[] = 
+{
+	0, 1, 2, // Bottom
+	0, 2, 3, // Bottom
+	0, 5, 1, // Back
+	0, 5, 4, // Back
+	0, 3, 7, // Left
+	0, 7, 4, // Left
+	2, 6, 1, // Right
+	1, 6, 5, // Right
+	3, 7, 6, // Front
+	2, 6, 3, // Front
+	4, 5, 6, // Top
+	6, 7, 4 // Top
+};
 
 
 /*
 * Initialize still needs to load shaders and build program.
 */
-void initialize(float *surfaceData, int numberOfPoints) {
+void initialize(float *surfaceData, int numberOfPoints) 
+{
 	glClearColor(1.0, 1.0, 1.0, 1.0);
 	glEnable(GL_DEPTH_TEST);
 	GLuint vao, buffer;
 	GLuint transformationLocation;
-	//glLineWidth(1.0);
 	static const GLchar *vertexShader = "#version 330 core \n"
 		""
 		"uniform mat4 transformation;"
@@ -80,7 +115,8 @@ void initialize(float *surfaceData, int numberOfPoints) {
 	glShaderSource(vertShaderID, 1, (const GLchar * const *)&vertexShader, (const GLint *)&vertexShaderLength);
 	glCompileShader(vertShaderID);
 	glGetShaderiv(vertShaderID, GL_COMPILE_STATUS, &compiledOK);
-	if (!compiledOK) {
+	if (!compiledOK) 
+	{
 		GLsizei length;
 		glGetShaderiv(vertShaderID, GL_INFO_LOG_LENGTH, &length);
 		GLchar * log = new GLchar[length + 1];
@@ -88,14 +124,16 @@ void initialize(float *surfaceData, int numberOfPoints) {
 		std::cerr << "Vertex Shader Compilation Failed: " << log << std::endl;
 		delete[] log;
 	}
-	else {
+	else 
+	{
 		glAttachShader(programID, vertShaderID);
 	}
 	fragShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragShaderID, 1, (const GLchar * const *)&fragmentShader, &fragmentShaderLength);
 	glCompileShader(fragShaderID);
 	glGetShaderiv(fragShaderID, GL_COMPILE_STATUS, &compiledOK);
-	if (!compiledOK) {
+	if (!compiledOK) 
+	{
 		GLsizei length;
 		glGetShaderiv(fragShaderID, GL_INFO_LOG_LENGTH, &length);
 		GLchar * log = new GLchar[length + 1];
@@ -103,7 +141,8 @@ void initialize(float *surfaceData, int numberOfPoints) {
 		std::cerr << "Fragment Shader Compilation Failed: " << log << std::endl;
 		delete[] log;
 	}
-	else {
+	else 
+	{
 		glAttachShader(programID, fragShaderID);
 	}
 	glGenVertexArrays(1, &vao);
@@ -120,7 +159,6 @@ void display()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glDrawArrays(GL_TRIANGLES, 0, 1200 * 1200 * 2);
 	glutSwapBuffers();  // instead of glflush() in double buffering.
-	
 }
 
 void setup(int argCount, char * argValues[])
@@ -138,20 +176,12 @@ void setup(int argCount, char * argValues[])
 int main(int argCount, char * argValues[]) 
 {
 	setup(argCount, argValues);
-	GLfloat triangles[] = { -10.0f, 0.0f, 10.0f, 0.0f, 0.0f, 10.0f, -10.0f, 0.0f, 0.0f,
-		-10.0f, 0.0f, 0.0f, 0.0f, 0.0f, 10.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 10.0f, 10.0f, 0.0f, 0.0f,
-		10.0f, 0.0f, 0.0f, 0.0f, 0.0f, 10.0f, 10.0f, 0.0f, 10.0f,
-		-10.0f, 0.0f, -10.0f, 0.0f, 0.0f, -10.0f, -10.0f, 0.0f, 0.0f,
-		-10.0f, 0.0f, 0.0f, 0.0f, 0.0f, -10.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -10.0f, 10.0f, 0.0f, 0.0f,
-		10.0f, 0.0f, 0.0f, 0.0f, 0.0f, -10.0f, 10.0f, 0.0f, -10.0f };
 
-	initialize(fileData, 1200 * 1200 * 2 * 3);
+
+	//initialize(, 1200 * 1200 * 2 * 3);
 
 	glutDisplayFunc(display);
 	glutMainLoop();
-	delete[] fileData;
 
 	return EXIT_SUCCESS;
 }
