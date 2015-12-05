@@ -70,12 +70,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CubeObject.h" />
+    <ClInclude Include="Drawable.h" />
+    <ClInclude Include="HierarchicalObject.h" />
     <ClInclude Include="LoadShaders.h" />
+    <ClInclude Include="SimpleObject.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CubeObject.cpp" />
+    <ClCompile Include="HierarchicalObject.cpp" />
     <ClCompile Include="LoadShaders.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="objReader.cpp" />
+    <ClCompile Include="SimpleObject.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
