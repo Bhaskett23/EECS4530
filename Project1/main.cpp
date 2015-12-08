@@ -29,7 +29,6 @@ void init()
 		{ GL_NONE, NULL }
 	};
 	GLuint programID = LoadShaders(shaders);
-	glClearColor(1, 1, 1, 1);
 	glUseProgram(programID);
 	toplevelObjects.push_back(new CubeObject(programID));
 }
