@@ -29,6 +29,7 @@ void init()
 		{ GL_NONE, NULL }
 	};
 	GLuint programID = LoadShaders(shaders);
+	glClearColor(1, 1, 1, 1);
 	glUseProgram(programID);
 	toplevelObjects.push_back(new CubeObject(programID));
 }
@@ -37,7 +38,7 @@ void display()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	for (auto obj : toplevelObjects) {
+	for (CubeObject* obj : toplevelObjects) {
 		obj->draw();
 	}
 	glFlush();

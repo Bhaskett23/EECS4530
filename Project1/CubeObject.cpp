@@ -5,8 +5,8 @@
  */
 CubeObject::CubeObject(GLuint programID)
 {
-
 	vmath::vec3 postion = vmath::vec3(0.5f, 0.5f, 0.01f);
+
 	GLfloat vertices[] = 
 	{
 		-0.5, -0.5, -0.5, 1.0,  0.5, -0.5, -0.5, 1.0,  0.5,  0.5, -0.5, 1.0,  // front and back faces
@@ -53,7 +53,8 @@ CubeObject::CubeObject(GLuint programID)
 		 vaobjectID, baobjectID);
  }
 
-void CubeObject::addSubBuffer(GLfloat *data, int bufferSize, int attribLoc, int &offset, int count) {
+void CubeObject::addSubBuffer(GLfloat *data, int bufferSize, int attribLoc, int &offset, int count) 
+{
 	if (data == NULL) 
 	{  // No data to add to the subbuffer
 		return;
@@ -93,13 +94,13 @@ void CubeObject::buildObject(GLfloat *vertices, int nbrVertices, int vertexAttri
 	addSubBuffer(vertices, nbrVertices, vertexAttribLoc, offset);
 	addSubBuffer(normals, nbrNormals, normalAttribLoc, offset, 3);
 	addSubBuffer(colors, nbrColors, colorsAttribLoc, offset);
-	
 }
+
 void CubeObject::draw() 
 {
 	GLint positionLoc, colorLoc, normalLoc;
 
-	vmath::mat4 projection = vmath::lookat(vmath::vec3(1.0, 1.0, 1.0),  // eye
+	vmath::mat4 projection = vmath::lookat(vmath::vec3(1.0, 1.0, 0.0),  // eye
 		vmath::vec3(0.0, 0.0, 0.0),  // center 
 		vmath::vec3(0.0, 0.0, 1.0)); // up
 	vmath::mat4 viewing = vmath::rotate(45.0f, vmath::vec3(1.0f, 0.0f, 0.0f));
@@ -151,22 +152,27 @@ void CubeObject::draw()
 	glBindBuffer(GL_ARRAY_BUFFER, baobjectID);
 	glDrawArrays(GL_TRIANGLES, 0, triangleCount * 3);
 }
+
 void CubeObject::moveDown()
-{
-	postion[0] -= .01;
-}
-void CubeObject::moveUp()
-{
-	postion[0] += .01;
-}
-void CubeObject::moveRight()
-{
-	postion[1] += .01;
-}
-void CubeObject::moveLeft()
 {
 	postion[1] -= .01;
 }
+
+void CubeObject::moveUp()
+{
+	postion[1] += .01;
+}
+
+void CubeObject::moveRight()
+{
+	postion[0] += .01;
+}
+
+void CubeObject::moveLeft()
+{
+	postion[0] -= .01;
+}
+
 void CubeObject::draw(vmath::mat4 transform) 
 {
 	draw();
